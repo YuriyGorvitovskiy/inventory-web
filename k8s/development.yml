@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: development
+  name: innventory-web-deployment
+spec:
+  selector:
+    matchLabels:
+      app: innventory-web
+  replicas: 1  
+  template:
+    metadata:
+      labels:
+        app: innventory-web
+    spec:
+      containers:
+      - name: innventory-web
+        image: yuriyg/inventory-web:0.0.1
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: development
+  name: innventory-web-service
+spec:
+  type: ClusterIP
+  selector:
+    app: innventory-web
+  ports:
+  - protocol: TCP
+    port: 3701
+    targetPort: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    namespace: development
+    name: innventory-web-ingress
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /dev(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: innventory-web-service
+            port:
+              number: 3701
