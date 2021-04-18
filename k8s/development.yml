@@ -16,9 +16,13 @@ spec:
     spec:
       containers:
       - name: innventory-web
-        image: yuriyg/inventory-web:0.0.1
+        image: yuriyg/inventory-web:latest
+        env:
+        - name: DATA_URL
+          value: "data/"
         ports:
         - containerPort: 80
+        imagePullPolicy: Always
 
 ---
 apiVersion: v1
